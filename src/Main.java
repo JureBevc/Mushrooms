@@ -8,7 +8,7 @@ public class Main {
 
 	private BufferedReader br;
 	private String fileName = "mushrooms.csv";
-	private int numberOfTestData = 6000;
+	private int numberOfTestData = 7000;
 	private ArrayList<int[]> trainData = new ArrayList<>();
 	private ArrayList<int[]> testData = new ArrayList<>();
 	private ArrayList<double[]> normalizedTrainData = new ArrayList<>();
@@ -26,7 +26,6 @@ public class Main {
 		System.out.println("Reading data...");
 		try {
 			boolean skipFirstLine = true;
-			int lineCount = 0;
 			String line;
 			while (br.ready()) {
 				line = br.readLine();
@@ -34,17 +33,16 @@ public class Main {
 					skipFirstLine = false;
 					continue;
 				}
-				// System.out.print(line);
-				if (lineCount < numberOfTestData) {
-					testData.add(lineToArray(line));
-					// System.out.println(" " + Arrays.toString(testData.get(testData.size() - 1)));
-				} else {
-					trainData.add(lineToArray(line));
-					// System.out.println(" " + Arrays.toString(trainData.get(trainData.size() -
-					// 1)));
-				}
-				lineCount++;
+				trainData.add(lineToArray(line));
 			}
+
+			System.out.println("Selecting " + numberOfTestData + " random test data...");
+			for (int i = 0; i < numberOfTestData; i++) {
+				int rand = (int) (Math.random() * trainData.size());
+				testData.add(trainData.get(rand));
+				trainData.remove(rand);
+			}
+
 			System.out.println("Normalizing data...");
 			for (int[] d : trainData) {
 				double[] norm = new double[d.length];
@@ -58,6 +56,7 @@ public class Main {
 				// System.out.println();
 				normalizedTrainData.add(norm);
 			}
+
 			for (int[] d : testData) {
 				double[] norm = new double[d.length];
 				for (int i = 0; i < d.length; i++) {
@@ -97,6 +96,8 @@ public class Main {
 	}
 
 	private void fitAndGuess() {
+		System.out.println("---------------------------");
+		System.out.println("Fitting and guessing...");
 		int total = 0;
 		int correct = 0;
 
@@ -112,7 +113,7 @@ public class Main {
 
 		//
 
-		NeuralNet net = new NeuralNet(new int[] { 22, 100, 1 }, false);
+		NeuralNet net = new NeuralNet(new int[] { 22, 15, 1 }, false);
 		// Normalize
 		net.fit(normalizedTrainData, 10);
 
